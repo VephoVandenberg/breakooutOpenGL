@@ -16,7 +16,14 @@ namespace gameModule
 	class shaderHandler
 	{
 	public:
-	    shaderHandler(const char *vertexPath, const char *fragmentPath);
+	    shaderHandler(const char *vertexPath, 
+	    	const char *fragmentPath, 
+	    	const char *geometryPath = nullptr);
+	    shaderHandler(void);
+
+	    void compile(const char *vShaderCode,
+	     	const char *fShaderCode, 
+	     	const char *gShaderCode = nullptr);
 	    void use(void);
 
 	    inline void setBool (const std::string &name, bool value)  const;
@@ -26,12 +33,10 @@ namespace gameModule
 	    void setMatrix(const std::string& name, glm::mat4 matrix) const;
 	    void setVector(const std::string& name, glm::vec2 vector) const;
 
-	private:
-	    unsigned int shaderID;
+	    unsigned int getID(void);
 
 	private:
-		shaderHandler(const shaderHandler& shaderInstance);
-		shaderHandler(shaderHandler&& shaderInstance);
+	    unsigned int shaderID;
 	};
 }
 

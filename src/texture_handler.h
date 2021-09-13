@@ -9,17 +9,6 @@ namespace gameModule
 	class textureHandler
 	{
 	public:
-	    textureHandler(const void *data,
-			   const unsigned int width,
-			   const unsigned int height);
-
-	    void generate(unsigned int width, unsigned int height, unsigned char *data);
-	    void bindTexture(void) const;
-	    void unbindTexture(void) const;
-	    
-	private:
-	    unsigned int textureID;
-
 	    unsigned int internalFormat;
 	    unsigned int imageFormat;
 
@@ -31,9 +20,21 @@ namespace gameModule
 	    unsigned int filterMin;
 	    unsigned int filterMax;
 
+	public:
+	    textureHandler(const void *data,
+			   const unsigned int width,
+			   const unsigned int height);
+	    textureHandler();
+
+	    void generate(unsigned int width, unsigned int height, unsigned char *data);
+	    void bindTexture(void) const;
+	    void unbindTexture(void) const;
+
+	    unsigned int *getID(void);
+
 	private:
-		textureHandler(const textureHandler& textureHandlerInstance);
-		textureHandler(textureHandler&& textureHandlerInstance);
+	    unsigned int textureID;
+
 	};
 }
 #endif

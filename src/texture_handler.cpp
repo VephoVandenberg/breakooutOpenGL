@@ -2,6 +2,11 @@
 
 using namespace gameModule;
 
+textureHandler::textureHandler(void)
+{
+    glGenTextures(1, &textureID);
+}
+
 textureHandler::textureHandler(const void *data,
 			         const unsigned int width,
 			         const unsigned int height)
@@ -51,4 +56,9 @@ void textureHandler::bindTexture(void) const
 void textureHandler::unbindTexture(void) const
 {
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+unsigned int *textureHandler::getID(void)
+{
+    return &textureID;
 }

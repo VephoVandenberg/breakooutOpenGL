@@ -2,7 +2,7 @@
 
 using namespace gameModule;
 
-game::game(unsigned int width, unsigned int height) 
+game::game(const unsigned int width, const unsigned int height) 
 		: screenWidth(width), screenHeight(height), state(GAME_ACTIVE)
 {
 
