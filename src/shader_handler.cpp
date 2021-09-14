@@ -167,9 +167,14 @@ void shaderHandler::setMatrix(const std::string& name, glm::mat4 matrix) const
     glUniformMatrix4fv(glGetUniformLocation(shaderID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void shaderHandler::setVector(const std::string& name, glm::vec2 vector) const
+void shaderHandler::setVector2f(const std::string& name, glm::vec2 vector) const
 {
     glUniform2f(glGetUniformLocation(shaderID, name.c_str()), vector[0], vector[1]);
+}
+
+void shaderHandler::setVector3f(const std::string& name, glm::vec3 vector) const
+{
+    glUniform3f(glGetUniformLocation(shaderID, name.c_str()), vector[0], vector[1], vector[2]);
 }
 
 unsigned int shaderHandler::getID(void)

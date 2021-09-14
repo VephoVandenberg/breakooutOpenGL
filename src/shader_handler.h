@@ -30,8 +30,9 @@ namespace gameModule
 	    inline void setInt  (const std::string &name, int value)   const;
 	    inline void setFloat(const std::string &name, float value) const;
 	    
-	    void setMatrix(const std::string& name, glm::mat4 matrix) const;
-	    void setVector(const std::string& name, glm::vec2 vector) const;
+	    void setMatrix  (const std::string& name, glm::mat4 matrix) const;
+	    void setVector2f(const std::string& name, glm::vec2 vector) const;
+	    void setVector3f(const std::string& name, glm::vec3 vector) const;
 
 	    unsigned int getID(void);
 
