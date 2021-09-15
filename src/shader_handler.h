@@ -1,44 +1,42 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-#include <fstream>
-#include <iostream>
-#include <sstream>
 #include <string>
 
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+// General purpsoe shader object. Compiles from file, generates
+// compile/link-time error messages and hosts several utility 
+// functions for easy management.
 namespace gameModule
 {
 	class shaderHandler
 	{
 	public:
-	    shaderHandler(const char *vertexPath, 
-	    	const char *fragmentPath, 
-	    	const char *geometryPath = nullptr);
-	    shaderHandler(void);
-
-	    void compile(const char *vShaderCode,
-	     	const char *fShaderCode, 
-	     	const char *gShaderCode = nullptr);
-	    void use(void);
-
-	    inline void setBool (const std::string &name, bool value)  const;
-	    inline void setInt  (const std::string &name, int value)   const;
-	    inline void setFloat(const std::string &name, float value) const;
-	    
-	    void setMatrix  (const std::string& name, glm::mat4 matrix) const;
-	    void setVector2f(const std::string& name, glm::vec2 vector) const;
-	    void setVector3f(const std::string& name, glm::vec3 vector) const;
-
-	    unsigned int getID(void);
-
+	    // state
+	    unsigned int ID; 
+	    // constructor
+	    shaderHandler() { }
+	    // sets the current shaderHandler as active
+	    shaderHandler  &use();
+	    // compiles the shader from given source code
+	    void    compile(const char *vertexSource, const char *fragmentSource, const char *geometrySource = nullptr); // note: geometry source code is optional 
+	    // utility functions
+	    void    setFloat    (const char *name, float value, bool useShader = false);
+	    void    setInteger  (const char *name, int value, bool useShader = false);
+	    void    setVector2f (const char *name, float x, float y, bool useShader = false);
+	    void    setVector2f (const char *name, const glm::vec2 &value, bool useShader = false);
+	    void    setVector3f (const char *name, float x, float y, float z, bool useShader = false);
+	    void    setVector3f (const char *name, const glm::vec3 &value, bool useShader = false);
+	    void    setVector4f (const char *name, float x, float y, float z, float w, bool useShader = false);
+	    void    setVector4f (const char *name, const glm::vec4 &value, bool useShader = false);
+	    void    setMatrix4  (const char *name, const glm::mat4 &matrix, bool useShader = false);
 	private:
-	    unsigned int shaderID;
+	    // checks if compilation or linking failed and if so, print the error logs
+	    void    checkCompileErrors(unsigned int object, std::string type); 
 	};
 }
-
 #endif

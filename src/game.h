@@ -4,35 +4,34 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "sprite_renderer.h"
+
+
 namespace gameModule
 {
-	enum gameState
-	{
-		GAME_ACTIVE,
-		GAME_MENU,
-		GAME_WIN
+	enum gameState {
+	    GAME_ACTIVE,
+	    GAME_MENU,
+	    GAME_WIN
 	};
 
 	class game
 	{
 	public:
-		gameState 	 state;
-		bool 		 keys[1024];
-		unsigned int screenWidth, screenHeight;
+	    gameState               state;	
+	    bool                    keys[1024];
+	    unsigned int            gameWidth, gameHeight;
 
 	public:
-		game(unsigned int width, unsigned int height);
-		~game(void);
-
-		void init(void);
-		void processInput(float dt);
-		void update(float dt);
-		void render(void);
-
+	    game(unsigned int width, unsigned int height);
+	    ~game();
+	    void init();
+	    void processInput(float dt);
+	    void update(float dt);
+	    void render();
+	    
 	private:
-		game(const game& gameInstance);
-		game(game&& gameInstance);
+		spriteRenderer  *renderer = NULL;
 	};
 }
-
 #endif
