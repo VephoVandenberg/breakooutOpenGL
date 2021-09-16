@@ -16,16 +16,12 @@ game::~game()
 
 void game::init()
 {
-    // load shaders
     resourceManager::loadShader("shaders/sprite_vertex_shader.vert", "shaders/sprite_fragment_shader.frag", nullptr, "sprite");
-    // configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameWidth), 
         static_cast<float>(gameHeight), 0.0f, -1.0f, 1.0f);
     resourceManager::getShader("sprite").use().setInteger("image", 0);
     resourceManager::getShader("sprite").setMatrix4("projection", projection);
-    // set render-specific controls
     renderer = new spriteRenderer(resourceManager::getShader("sprite"));
-    // load textures
     resourceManager::loadTexture("textures/awesomeface.png", true, "face");
 }
 
