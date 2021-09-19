@@ -62,7 +62,7 @@ void gameLevel::init(std::vector<std::vector<unsigned int>> tileData,
 				glm::vec2 size(unitWidth, unitHeight);
 				gameObject object(pos, size,
 						   		  resourceManager::getTexture("block_solid"),
-						   		  glm::vec3(0.5f, 0.3f, 0.2f));
+						   		  glm::vec3(0.8f, 0.8f, 0.7f));
 				object.isSolid = true;
 				bricks.push_back(object);
 			}
@@ -93,7 +93,7 @@ void gameLevel::init(std::vector<std::vector<unsigned int>> tileData,
 
 					default:
 					{
-						
+
 					}break;
 				}
 

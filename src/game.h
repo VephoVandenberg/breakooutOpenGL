@@ -8,6 +8,7 @@
 
 #include "sprite_renderer.h"
 #include "game_level.h"
+#include "game_object.h"
 
 
 namespace gameModule
@@ -36,7 +37,8 @@ namespace gameModule
 	    void render();
 	    
 	private:
-		spriteRenderer  *renderer = NULL;
+		spriteRenderer  *renderer 	= NULL;
+		gameObject 		*player 	= NULL;
 	};
 }
 #endif

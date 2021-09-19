@@ -5,6 +5,9 @@
 
 using namespace gameModule;
 
+const glm::vec2 PLAYER_SIZE(100.0f, 20.0f);
+const float PLAYER_VELOCITY(500.0f);
+
 game::game(unsigned int width, unsigned int height) 
     : state(GAME_ACTIVE), keys(), gameWidth(width), gameHeight(height)
 { 
@@ -26,18 +29,25 @@ void game::init()
     resourceManager::getShader("sprite").use().setInteger("image", 0);
     resourceManager::getShader("sprite").setMatrix4("projection", projection);
 
-    renderer = new spriteRenderer(resourceManager::getShader("sprite"));
 
     resourceManager::loadTexture("textures/background.jpg",  false, "background");
     resourceManager::loadTexture("textures/awesomeface.png", true,  "face");
-    resourceManager::loadTexture("textures/block.png",       false,  "block");
-    resourceManager::loadTexture("textures/block_solid.png", false,  "block_solid");
+    resourceManager::loadTexture("textures/block.png",       false, "block");
+    resourceManager::loadTexture("textures/block_solid.png", false, "block_solid");
+
+    resourceManager::loadTexture("textures/paddle.png",      true,  "paddle");
+
+    glm::vec2 playerPos = glm::vec2(gameWidth / 2.0f - PLAYER_SIZE.x / 2.0f, gameHeight - PLAYER_SIZE.y);
+
+    renderer = new spriteRenderer(resourceManager::getShader("sprite"));
+    player = new gameObject(playerPos, PLAYER_SIZE, resourceManager::getTexture("paddle"), glm::vec3(1.0f));
 
     gameLevel one, two, three, four;
     one.load("levels/one.lvl",      gameWidth, gameHeight / 2);
     two.load("levels/two.lvl",      gameWidth, gameHeight / 2);
     three.load("levels/three.lvl",  gameWidth, gameHeight / 2);
     four.load("levles/four.lvl",    gameWidth, gameHeight / 2);
+
 
     levels.push_back(one);
     levels.push_back(two);
@@ -53,7 +63,26 @@ void game::update(float dt)
 
 void game::processInput(float dt)
 {
-   
+    if (state == GAME_ACTIVE)
+    {
+        float velocity = PLAYER_VELOCITY * dt;
+
+        if (keys[GLFW_KEY_A])
+        {
+            if (player->position.x >= 0.0f)
+            {
+                player->position.x -= velocity;
+            }
+        }
+
+        if (keys[GLFW_KEY_D])
+        {
+            if (player->position.x <= gameWidth - player->size.x)
+            {
+                player->position.x += velocity;
+            }
+        }
+    }
 }
 
 void game::render()
@@ -64,5 +93,6 @@ void game::render()
             glm::vec2(0.0f, 0.0f), glm::vec2(gameWidth, gameHeight), 0.0f);
 
         levels[level].draw(*renderer);
+        player->draw(*renderer);
     }
 }
