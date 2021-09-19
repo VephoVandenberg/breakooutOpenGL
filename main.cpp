@@ -11,10 +11,10 @@ using namespace gameModule;
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-const unsigned int SCREEN_WIDTH = 800;
-const unsigned int SCREEN_HEIGHT = 600;
+const unsigned int screenWidth = 800;
+const unsigned int screenHeight = 600;
 
-game breakout(SCREEN_WIDTH, SCREEN_HEIGHT);
+game breakout(screenWidth, screenHeight);
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         std::cout << "Could not initialie GLFW" << std::endl;
     }
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "breakout", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "breakout", nullptr, nullptr);
     glfwMakeContextCurrent(window);
 
 
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     glfwSetKeyCallback(window, keyCallback);
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, screenWidth, screenHeight);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

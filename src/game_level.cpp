@@ -1,6 +1,9 @@
-#include "game_level.h"
+#include <fstream>
+#include <sstream>
 
+#include "game_level.h"
 #include "resource_manager.h"
+
 
 using namespace gameModule;
 
@@ -23,7 +26,7 @@ void gameLevel::load(const char *file,
 
 	if (fileStream)
 	{
-		while (std::getline(fstream, line))
+		while (std::getline(fileStream, line))
 		{
 			std::istringstream rowOfNumbers(line);
 			std::vector<unsigned int> row;
@@ -47,7 +50,7 @@ void gameLevel::init(std::vector<std::vector<unsigned int>> tileData,
 	unsigned int height = tileData.size();
 	unsigned int width  = tileData[0].size();
 	float unitWidth 	= levelWidth/static_cast<float>(width);
-	float unitHeight 	= levelHeight/static_cast<float>(height);  	
+	float unitHeight 	= levelHeight/height;  	
 
 	for (unsigned int y = 0; y < height; y++)
 	{
@@ -69,28 +72,59 @@ void gameLevel::init(std::vector<std::vector<unsigned int>> tileData,
 				switch (tileData[y][x])
 				{
 					case 2:
-					{}break;
+					{
+						color = glm::vec3(0.2f, 0.6f, 1.0f);
+					}break;
 
 					case 3:
-					{}break;
+					{
+						color = glm::vec3(0.0f, 0.7f, 0.0f);
+					}break;
 
 					case 4:
-					{}break;
+					{
+						color = glm::vec3(0.4f, 0.9f, 0.5f);
+					}break;
 
 					case 5:
-					{}break;
+					{
+						color = glm::vec3(1.0f, 0.5f, 0.0f);
+					}break;
+
+					default:
+					{
+						
+					}break;
 				}
+
+				glm::vec2 pos(unitWidth * x, unitHeight * y);
+				glm::vec2 size(unitWidth, unitHeight);
+				bricks.push_back(gameObject(pos, size, resourceManager::getTexture("block"), color));
 			}
 		}
 	}
 }		
 
-void gameLevel::draw(spriteRenderer *renderer)
+void gameLevel::draw(spriteRenderer &renderer)
 {
-
+	for (gameObject &tile : bricks)
+	{
+		if (!tile.destroyed)
+		{
+			tile.draw(renderer);
+		}
+	}
 }
 
 bool gameLevel::isCompleted(void)
 {
+	for (gameObject &tile : bricks)
+	{
+		if (!tile.isSolid && !tile.destroyed)
+		{
+			return false;
+		}
+	}
 
+	return true;	
 }

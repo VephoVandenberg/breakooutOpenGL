@@ -95,6 +95,11 @@ textureHandler resourceManager::loadTextureFromFile(const char *file, bool alpha
     }
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
+
+    if (!data)
+    {
+        std::cout << "failed to laod texture from" << file << std::endl;        
+    }
     texture.generate(width, height, data);
     stbi_image_free(data);
     return texture;

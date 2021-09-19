@@ -1,10 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <vector>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include "sprite_renderer.h"
+#include "game_level.h"
 
 
 namespace gameModule
@@ -21,6 +24,8 @@ namespace gameModule
 	    gameState               state;	
 	    bool                    keys[1024];
 	    unsigned int            gameWidth, gameHeight;
+	    std::vector<gameLevel> 	levels;
+	    unsigned int 			level;
 
 	public:
 	    game(unsigned int width, unsigned int height);

@@ -1,7 +1,10 @@
 #ifndef GAME_LEVEL_H
 #define GAME_LEVEL_H
 
+#include <vector>
+
 #include "game_object.h"
+
 
 namespace gameModule
 {
@@ -14,7 +17,7 @@ namespace gameModule
 		gameLevel(void);
 		void load(const char *file, 
 			unsigned int levelWidth, unsigned int levelHeight);
-		void draw(spriteRenderer *renderer);
+		void draw(spriteRenderer &renderer);
 		bool isCompleted(void);
 
 	private:
