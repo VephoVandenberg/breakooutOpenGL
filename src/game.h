@@ -9,7 +9,7 @@
 #include "sprite_renderer.h"
 #include "game_level.h"
 #include "game_object.h"
-
+#include "ball_object.h"
 
 namespace gameModule
 {
@@ -39,6 +39,7 @@ namespace gameModule
 	private:
 		spriteRenderer  *renderer 	= NULL;
 		gameObject 		*player 	= NULL;
+		ballObject 		*ball 		= NULL;
 	};
 }
 #endif
