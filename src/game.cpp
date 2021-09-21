@@ -26,7 +26,7 @@ void game::init()
     resourceManager::loadShader("shaders/sprite_vertex_shader.vert", "shaders/sprite_fragment_shader.frag", nullptr, "sprite");
     
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameWidth), 
-        static_cast<float>(gameHeight), 0.0f, -1.0f, 1.0f);
+        static_cast<float>(gameHeight), 0.0f, 0.0f, 1.0f);
 
     resourceManager::getShader("sprite").use().setInteger("image", 0);
     resourceManager::getShader("sprite").setMatrix4("projection", projection);
@@ -60,9 +60,42 @@ void game::init()
     level = 0;
 }
 
+bool game::checkCollision(gameObject &firstObj, gameObject &secondObj)
+{
+    bool collideX = firstObj.position.x + firstObj.size.x >= secondObj.position.x &&
+                      secondObj.position.x + secondObj.size.x >= firstObj.position.x;
+
+    bool collideY = firstObj.position.y + firstObj.size.y >= secondObj.position.y &&
+                      secondObj.position.y + secondObj.size.y >= firstObj.position.y;
+
+    return collideX && collideY;
+}
+
+void game::doCollisions(void)
+{
+    for (gameObject &box : levels[level].bricks)
+    {
+        if (!box.destroyed)
+        {
+            if (checkCollision(*ball, box))
+            {
+                if (!box.isSolid)
+                {
+                    box.destroyed = true;
+                }
+                else
+                {
+                    ball->velocity.y = -ball->velocity.y;
+                }
+            }
+        }
+    }
+}
+
 void game::update(float dt)
 {
     ball->move(dt, gameWidth);
+    doCollisions();
 }
 
 void game::processInput(float dt)

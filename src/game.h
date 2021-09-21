@@ -30,11 +30,13 @@ namespace gameModule
 
 	public:
 	    game(unsigned int width, unsigned int height);
-	    ~game();
-	    void init();
+	    ~game(void);
+	    void init(void);
 	    void processInput(float dt);
 	    void update(float dt);
-	    void render();
+	    void render(void);
+	    void doCollisions(void);
+	    bool checkCollision(gameObject &firstObj, gameObject &secondObj);
 	    
 	private:
 		spriteRenderer  *renderer 	= NULL;
