@@ -36,7 +36,9 @@ namespace gameModule
 	    void update(float dt);
 	    void render(void);
 	    void doCollisions(void);
+	    
 	    bool checkCollision(gameObject &firstObj, gameObject &secondObj);
+	    bool checkCollision(ballObject &firstObj, gameObject &secondObj);
 	    
 	private:
 		spriteRenderer  *renderer 	= NULL;

@@ -71,6 +71,23 @@ bool game::checkCollision(gameObject &firstObj, gameObject &secondObj)
     return collideX && collideY;
 }
 
+bool game::checkCollision(ballObject &firstObj, gameObject &secondObj)
+{
+    glm::vec2 circleCenter(firstObj.position + firstObj.radius);
+
+    glm::vec2 recHalfExtents(secondObj.size.x / 2, secondObj.size.y / 2);
+    glm::vec2 recCenter(secondObj.position.x + recHalfExtents.x,
+                        secondObj.position.y + recHalfExtents.y);
+
+    glm::vec2 difference = circleCenter - recCenter;
+    glm::vec2 clamped = glm::clamp(difference, -recHalfExtents, recHalfExtents);
+
+    glm::vec2 closest = recCenter + clamped;
+
+    difference = closest - circleCenter;
+    return glm::length(difference) < firstObj.radius;
+}
+
 void game::doCollisions(void)
 {
     for (gameObject &box : levels[level].bricks)
@@ -82,10 +99,6 @@ void game::doCollisions(void)
                 if (!box.isSolid)
                 {
                     box.destroyed = true;
-                }
-                else
-                {
-                    ball->velocity.y = -ball->velocity.y;
                 }
             }
         }
