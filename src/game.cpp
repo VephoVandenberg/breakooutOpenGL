@@ -5,11 +5,6 @@
 
 using namespace gameModule;
 
-const glm::vec2 PLAYER_SIZE(100.0f, 20.0f);
-const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
-const float PLAYER_VELOCITY(500.0f);
-const float BALL_RADIUS = 12.5f;
-
 game::game(unsigned int width, unsigned int height) 
     : state(GAME_ACTIVE), keys(), gameWidth(width), gameHeight(height)
 { 
@@ -71,7 +66,7 @@ bool game::checkCollision(gameObject &firstObj, gameObject &secondObj)
     return collideX && collideY;
 }
 
-bool game::checkCollision(ballObject &firstObj, gameObject &secondObj)
+collision game::checkCollision(ballObject &firstObj, gameObject &secondObj)
 {
     glm::vec2 circleCenter(firstObj.position + firstObj.radius);
 
@@ -85,7 +80,15 @@ bool game::checkCollision(ballObject &firstObj, gameObject &secondObj)
     glm::vec2 closest = recCenter + clamped;
 
     difference = closest - circleCenter;
-    return glm::length(difference) < firstObj.radius;
+
+    if (glm::length(difference) <= firstObj.radius)
+    {
+        return std::make_tuple(true, vectorDirection(difference), difference);
+    }
+    else
+    {
+        return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
+    }
 }
 
 void game::doCollisions(void)
@@ -94,15 +97,74 @@ void game::doCollisions(void)
     {
         if (!box.destroyed)
         {
-            if (checkCollision(*ball, box))
+            collision coll = checkCollision(*ball, box);
+            if (std::get<0>(coll))
             {
                 if (!box.isSolid)
                 {
                     box.destroyed = true;
                 }
+
+                direction dir = std::get<1>(coll);
+                glm::vec2 diffVector = std::get<2>(coll);
+
+                if (dir == RIGHT || dir == LEFT)
+                {
+                    ball->velocity.x = -ball->velocity.x;
+
+                    float penetration = ball->radius - std::abs(diffVector.x);
+
+                    if (dir == LEFT)
+                    {
+                        ball->position.x += penetration;
+                    }
+                    else
+                    {
+                        ball->position.x -= penetration;
+                    }
+                }
+                else
+                {
+                    ball->velocity.y = -ball->velocity.y;
+
+                    float penetration = ball->radius - std::abs(diffVector.y);
+
+                    if (dir == DOWN)
+                    {
+                        ball->position.y += penetration;
+                    }
+                    else
+                    {
+                        ball->position.y -= penetration;
+                    }
+                }
             }
         }
     }
+}
+
+direction game::vectorDirection(glm::vec2 target)
+{
+    glm::vec2 compass[4] = {
+        glm::vec2(0.0f,  1.0f),
+        glm::vec2(1.0f,  0.0f),
+        glm::vec2(0.0f, -1.0f),
+        glm::vec2(-1.0f, 0.0f)
+    };
+
+    float max = 0.0f;
+    unsigned int bestMatch = -1;
+    for (unsigned int i = 0; i < 4; i++)
+    {
+        float dotProduct = glm::dot(glm::normalize(target), compass[i]);
+        if (dotProduct > max)
+        {
+            max = dotProduct;
+            bestMatch = i;
+        }
+    }
+
+    return (direction)bestMatch;
 }
 
 void game::update(float dt)
