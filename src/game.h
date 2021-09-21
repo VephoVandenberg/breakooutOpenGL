@@ -52,6 +52,8 @@ namespace gameModule
 	    void update(float dt);
 	    void render(void);
 	    void doCollisions(void);
+	    void resetLevel(void);
+	    void resetPlayer(void);
 
 	    bool checkCollision(gameObject &firstObj, gameObject &secondObj);
 	    

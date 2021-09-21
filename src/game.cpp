@@ -141,6 +141,22 @@ void game::doCollisions(void)
             }
         }
     }
+
+    collision result = checkCollision(*ball, *player);
+
+    if (std::get<0>(result) && !ball->stuck)
+    {
+        float centerPaddle = player->position.x + player->size.x / 2.0f;
+        float distance = (ball->position.x + ball->radius) - centerPaddle;
+        float percentage = distance / (player->size.x / 2.0f);
+
+        float strength = 2.0f;
+        glm::vec2 oldVelocity = ball->velocity;
+        ball->velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength;
+        // ball->velocity.y = -ball->velocity.y;
+        ball->velocity.y = -1.0f * std::abs(ball->velocity.y);
+        ball->velocity = glm::normalize(ball->velocity) * glm::length(oldVelocity);
+    }
 }
 
 direction game::vectorDirection(glm::vec2 target)
@@ -167,10 +183,52 @@ direction game::vectorDirection(glm::vec2 target)
     return (direction)bestMatch;
 }
 
+void game::resetLevel(void)
+{
+    switch(level)
+    {
+        case 0:
+        {
+            levels[level].load("levels/one.lvl", gameWidth, gameHeight / 2);
+        }break;
+
+
+        case 1:
+        {
+            levels[level].load("levels/two.lvl", gameWidth, gameHeight / 2);
+        }break;
+
+
+        case 2:
+        {
+            levels[level].load("levels/three.lvl", gameWidth, gameHeight / 2);
+        }break;
+
+
+        case 3:
+        {
+            levels[level].load("levels/four.lvl", gameWidth, gameHeight / 2);
+        }break;
+    }
+}
+
+void game::resetPlayer(void)
+{
+    player->size = PLAYER_SIZE;
+    player->position = glm::vec2(gameWidth / 2.0f - player->size.x / 2.0f, gameHeight - player->size.y);
+    ball->reset(player->position + glm::vec2(player->size.x / 2.0f - ball->radius, -(2.0f * ball->radius)), INITIAL_BALL_VELOCITY);
+}
+
 void game::update(float dt)
 {
     ball->move(dt, gameWidth);
     doCollisions();
+
+    if (ball->position.y >= gameHeight)
+    {
+        resetLevel();
+        resetPlayer();
+    }
 }
 
 void game::processInput(float dt)
