@@ -11,6 +11,7 @@
 #include "game_level.h"
 #include "game_object.h"
 #include "ball_object.h"
+#include "particle.h"
 
 namespace gameModule
 {
@@ -61,9 +62,10 @@ namespace gameModule
 	    direction vectorDirection(glm::vec2 target);
 
 	private:
-		spriteRenderer  *renderer 	= NULL;
-		gameObject 		*player 	= NULL;
-		ballObject 		*ball 		= NULL;
+		spriteRenderer    *renderer 	= NULL;
+		gameObject 		  *player 		= NULL;
+		ballObject 		  *ball 		= NULL;
+		particleGenerator *particles 	= NULL;
 	};
 }
 #endif

@@ -19,13 +19,15 @@ game::~game()
 void game::init()
 {
     resourceManager::loadShader("shaders/sprite_vertex_shader.vert", "shaders/sprite_fragment_shader.frag", nullptr, "sprite");
+    resourceManager::loadShader("shaders/particle_vertex.vert", "shaders/particle_fragment.frag", nullptr, "particle");
     
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameWidth), 
         static_cast<float>(gameHeight), 0.0f, 0.0f, 1.0f);
 
     resourceManager::getShader("sprite").use().setInteger("image", 0);
     resourceManager::getShader("sprite").setMatrix4("projection", projection);
-
+    resourceManager::getShader("particle").use().setInteger("sprite", 0);
+    resourceManager::getShader("particle").setMatrix4("projection", projection);
 
     resourceManager::loadTexture("textures/background.jpg",  false, "background");
     resourceManager::loadTexture("textures/block.png",       false, "block");
@@ -33,6 +35,7 @@ void game::init()
     resourceManager::loadTexture("textures/awesomeface.png", true,  "face");
 
     resourceManager::loadTexture("textures/paddle.png",      true,  "paddle");
+    resourceManager::loadTexture("textures/particle.png",    true,  "particle");
 
     glm::vec2 playerPos = glm::vec2(gameWidth / 2.0f - PLAYER_SIZE.x / 2.0f, gameHeight - PLAYER_SIZE.y);
     glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -BALL_RADIUS * 2.0f);
@@ -40,6 +43,8 @@ void game::init()
     renderer = new spriteRenderer(resourceManager::getShader("sprite"));
     player = new gameObject(playerPos, PLAYER_SIZE, resourceManager::getTexture("paddle"), glm::vec3(1.0f));
     ball = new ballObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, resourceManager::getTexture("face"));
+    std::cout << "everything is ok";
+    particles = new particleGenerator(resourceManager::getShader("particle"), resourceManager::getTexture("particle"), 500);
 
     gameLevel one, two, three, four;
     one.load("levels/one.lvl",      gameWidth, gameHeight / 2);
@@ -222,6 +227,8 @@ void game::resetPlayer(void)
 void game::update(float dt)
 {
     ball->move(dt, gameWidth);
+    particles->update(dt, *ball, 1, glm::vec2(ball->radius / 2.0f));
+
     doCollisions();
 
     if (ball->position.y >= gameHeight)
@@ -277,6 +284,11 @@ void game::render()
 
         levels[level].draw(*renderer);
         player->draw(*renderer);
+
+        if (!ball->stuck)
+        {
+            particles->draw();
+        }
         ball->draw(*renderer);
     }
 }
