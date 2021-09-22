@@ -9,7 +9,6 @@ particleGenerator::particleGenerator(shaderHandler shaderArg, textureHandler tex
 										shader(shaderArg), texture(textureArg), amount(amountArg), lastUsedParticle(0)
 {
 	init();
-	std::cout << "it comes here";
 }
 
 void particleGenerator::update(float dt, gameObject &gameObj, unsigned int newParticles, glm::vec2 offset)
