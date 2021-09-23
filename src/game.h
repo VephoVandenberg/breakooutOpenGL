@@ -13,6 +13,7 @@
 #include "ball_object.h"
 #include "particle.h"
 #include "post_processor.h"
+#include "powerup.h"
 
 namespace gameModule
 {
@@ -43,6 +44,7 @@ namespace gameModule
 	    gameState               state;	
 	    bool                    keys[1024];
 	    unsigned int            gameWidth, gameHeight;
+	    std::vector<powerUp>	powerUps;
 	    std::vector<gameLevel> 	levels;
 	    unsigned int 			level;
 
@@ -56,8 +58,13 @@ namespace gameModule
 	    void doCollisions(void);
 	    void resetLevel(void);
 	    void resetPlayer(void);
+	    void spawnPowerUps(gameObject &object);
+	    void updatePowerUps(float dt);
+	    void activatePowerUp(powerUp &power);
 
+	    bool shouldSpawn(unsigned int chance);
 	    bool checkCollision(gameObject &firstObj, gameObject &secondObj);
+	    bool isOtherPowerUpActive(std::vector<powerUp> &power, std::string type);
 	    
 	    collision checkCollision(ballObject &firstObj, gameObject &secondObj);
 	    direction vectorDirection(glm::vec2 target);

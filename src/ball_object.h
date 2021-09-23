@@ -14,6 +14,8 @@ namespace gameModule
 		float radius;
 		bool stuck;
 
+		bool sticky, passThrough;
+
 	public:
 		ballObject(void);
 		ballObject(glm::vec2 pos, float radius, glm::vec2 velocity, textureHandler sprite);

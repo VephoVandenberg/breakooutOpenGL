@@ -3,13 +3,13 @@
 using namespace gameModule;
 
 ballObject::ballObject(void) :
-	gameObject(), radius(12.5f), stuck(true)
+	gameObject(), radius(12.5f), stuck(true), sticky(false), passThrough(false)
 {
 
 }
 
 ballObject::ballObject(glm::vec2 pos, float radiusArg, glm::vec2 velocityArg, textureHandler spriteArg) :
-	gameObject(pos, glm::vec2(radiusArg * 2.0f, radiusArg * 2.0f),  spriteArg, glm::vec3(1.0f), velocityArg), radius(radiusArg)
+	gameObject(pos, glm::vec2(radiusArg * 2.0f, radiusArg * 2.0f),  spriteArg, glm::vec3(1.0f), velocityArg), radius(radiusArg), sticky(false), passThrough(false)
 {
 
 }
