@@ -16,6 +16,10 @@ game::game(unsigned int width, unsigned int height)
 game::~game()
 {
     delete renderer;
+    delete player;
+    delete ball;
+    delete particles;
+    delete effects;
 }
 
 void game::init()
@@ -54,6 +58,9 @@ void game::init()
     ball = new ballObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, resourceManager::getTexture("face"));
     particles = new particleGenerator(resourceManager::getShader("particle"), resourceManager::getTexture("particle"), 500);
     effects = new postProcessor(resourceManager::getShader("postProcessing").use(), gameWidth, gameHeight);
+
+    soundEngine = irrklang::createIrrKlangDevice();
+    soundEngine->play2D("audio/breakout.mp3", true);
 
     gameLevel one, two, three, four;
     one.load("levels/one.lvl",      gameWidth, gameHeight / 2);
@@ -265,11 +272,13 @@ void game::doCollisions(void)
                 {
                     box.destroyed = true;
                     spawnPowerUps(box);
+                    soundEngine->play2D("audio/bleep.mp3", false);
                 }
                 else
                 {
                     shakeTime = 0.05f;
                     effects->shake = true;
+                    soundEngine->play2D("audio/solid.wav", false);
                 }
 
                 direction dir = std::get<1>(coll);
@@ -328,6 +337,7 @@ void game::doCollisions(void)
         ball->velocity.y = -1.0f * std::abs(ball->velocity.y);
         ball->velocity = glm::normalize(ball->velocity) * glm::length(oldVelocity);
         ball->stuck = ball->sticky;
+        soundEngine->play2D("audio/bleep.wav", false);
     }
 
     for (powerUp &power : powerUps)
@@ -343,6 +353,7 @@ void game::doCollisions(void)
                 activatePowerUp(power);
                 power.destroyed = true;
                 power.activated = true;
+                soundEngine->play2D("audio/powerup.wav", false);
             }
         }
     }

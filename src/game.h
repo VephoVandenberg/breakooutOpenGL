@@ -6,6 +6,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <irrklang/irrKlang.h>
 
 #include "sprite_renderer.h"
 #include "game_level.h"
@@ -70,11 +71,12 @@ namespace gameModule
 	    direction vectorDirection(glm::vec2 target);
 
 	private:
-		spriteRenderer    *renderer 	= NULL;
-		gameObject 		  *player 		= NULL;
-		ballObject 		  *ball 		= NULL;
-		particleGenerator *particles 	= NULL;
-		postProcessor 	  *effects  	= NULL;
+		spriteRenderer    		*renderer 		= NULL;
+		gameObject 		  		*player 		= NULL;
+		ballObject 		  		*ball 			= NULL;
+		particleGenerator 		*particles 		= NULL;
+		postProcessor 	  		*effects  		= NULL;
+		irrklang::ISoundEngine 	*soundEngine  	= NULL;
 
 		float shakeTime = 0.0f;
 	};
