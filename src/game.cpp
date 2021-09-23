@@ -20,7 +20,8 @@ void game::init()
 {
     resourceManager::loadShader("shaders/sprite_vertex_shader.vert", "shaders/sprite_fragment_shader.frag", nullptr, "sprite");
     resourceManager::loadShader("shaders/particle_vertex.vert", "shaders/particle_fragment.frag", nullptr, "particle");
-    
+    resourceManager::loadShader("shaders/post_processing.vert", "shaders/post_processing.frag", nullptr, "postProcessing");
+
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameWidth), 
         static_cast<float>(gameHeight), 0.0f, 0.0f, 1.0f);
 
@@ -43,8 +44,8 @@ void game::init()
     renderer = new spriteRenderer(resourceManager::getShader("sprite"));
     player = new gameObject(playerPos, PLAYER_SIZE, resourceManager::getTexture("paddle"), glm::vec3(1.0f));
     ball = new ballObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, resourceManager::getTexture("face"));
-    std::cout << "everything is ok";
     particles = new particleGenerator(resourceManager::getShader("particle"), resourceManager::getTexture("particle"), 500);
+    effects = new postProcessor(resourceManager::getShader("postProcessing").use(), gameWidth, gameHeight);
 
     gameLevel one, two, three, four;
     one.load("levels/one.lvl",      gameWidth, gameHeight / 2);
@@ -108,6 +109,11 @@ void game::doCollisions(void)
                 if (!box.isSolid)
                 {
                     box.destroyed = true;
+                }
+                else
+                {
+                    shakeTime = 0.05f;
+                    effects->shake = true;
                 }
 
                 direction dir = std::get<1>(coll);
@@ -236,6 +242,15 @@ void game::update(float dt)
         resetLevel();
         resetPlayer();
     }
+
+    if (shakeTime > 0.0f)
+    {
+        shakeTime -= dt;
+        if (shakeTime <= 0.0f)
+        {
+            effects->shake = false;
+        }
+    }
 }
 
 void game::processInput(float dt)
@@ -279,6 +294,7 @@ void game::render()
 {
     if (state == GAME_ACTIVE)
     {
+        effects->beginRender();
         renderer->drawSprite(resourceManager::getTexture("background"),
             glm::vec2(0.0f, 0.0f), glm::vec2(gameWidth, gameHeight), 0.0f);
 
@@ -290,5 +306,7 @@ void game::render()
             particles->draw();
         }
         ball->draw(*renderer);
+        effects->endRender();
+        effects->render(glfwGetTime());
     }
 }

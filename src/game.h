@@ -12,6 +12,7 @@
 #include "game_object.h"
 #include "ball_object.h"
 #include "particle.h"
+#include "post_processor.h"
 
 namespace gameModule
 {
@@ -66,6 +67,9 @@ namespace gameModule
 		gameObject 		  *player 		= NULL;
 		ballObject 		  *ball 		= NULL;
 		particleGenerator *particles 	= NULL;
+		postProcessor 	  *effects  	= NULL;
+
+		float shakeTime = 0.0f;
 	};
 }
 #endif
