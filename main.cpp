@@ -79,6 +79,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
             breakout.keys[key] = true;
         else if (action == GLFW_RELEASE)
             breakout.keys[key] = false;
+            breakout.keysProcessed[key] = false;
     }
 }
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <sstream>
 
 #include "game.h"
 #include "resource_manager.h"
@@ -8,7 +9,7 @@
 using namespace gameModule;
 
 game::game(unsigned int width, unsigned int height) 
-    : state(GAME_ACTIVE), keys(), gameWidth(width), gameHeight(height)
+    : state(GAME_MENU), keys(), gameWidth(width), gameHeight(height), lives(3)
 { 
 
 }
@@ -25,8 +26,9 @@ game::~game()
 void game::init()
 {
     resourceManager::loadShader("shaders/sprite_vertex_shader.vert", "shaders/sprite_fragment_shader.frag", nullptr, "sprite");
-    resourceManager::loadShader("shaders/particle_vertex.vert", "shaders/particle_fragment.frag", nullptr, "particle");
-    resourceManager::loadShader("shaders/post_processing.vert", "shaders/post_processing.frag", nullptr, "postProcessing");
+    resourceManager::loadShader("shaders/particle_vertex.vert", "shaders/particle_fragment.frag",           nullptr, "particle");
+    resourceManager::loadShader("shaders/post_processing.vert", "shaders/post_processing.frag",             nullptr, "postProcessing");
+    resourceManager::loadShader("shaders/text_2D.vert", "shaders/text_2D.frag",                             nullptr, "text");
 
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(gameWidth), 
         static_cast<float>(gameHeight), 0.0f, 0.0f, 1.0f);
@@ -58,6 +60,8 @@ void game::init()
     ball = new ballObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, resourceManager::getTexture("face"));
     particles = new particleGenerator(resourceManager::getShader("particle"), resourceManager::getTexture("particle"), 500);
     effects = new postProcessor(resourceManager::getShader("postProcessing").use(), gameWidth, gameHeight);
+    text = new textRenderer(gameWidth, gameHeight, resourceManager::getShader("text"));
+    text->load("fonts/ocraext.TTF", 21);
 
     soundEngine = irrklang::createIrrKlangDevice();
     soundEngine->play2D("audio/breakout.mp3", true);
@@ -66,7 +70,7 @@ void game::init()
     one.load("levels/one.lvl",      gameWidth, gameHeight / 2);
     two.load("levels/two.lvl",      gameWidth, gameHeight / 2);
     three.load("levels/three.lvl",  gameWidth, gameHeight / 2);
-    four.load("levles/four.lvl",    gameWidth, gameHeight / 2);
+    four.load("levels/four.lvl",    gameWidth, gameHeight / 2);
 
 
     levels.push_back(one);
@@ -410,6 +414,7 @@ void game::resetLevel(void)
             levels[level].load("levels/four.lvl", gameWidth, gameHeight / 2);
         }break;
     }
+    lives = 3;
 }
 
 void game::resetPlayer(void)
@@ -434,7 +439,13 @@ void game::update(float dt)
 
     if (ball->position.y >= gameHeight)
     {
-        resetLevel();
+        lives--;
+
+        if (lives <= 0)
+        {
+            resetLevel();
+            state = GAME_MENU;
+        }
         resetPlayer();
     }
 
@@ -446,10 +457,54 @@ void game::update(float dt)
             effects->shake = false;
         }
     }
+
+    if (state == GAME_ACTIVE && levels[level].isCompleted())
+    {
+        resetPlayer();
+        resetLevel();
+        effects->chaos = true;
+        state = GAME_WIN;
+    }
 }
 
 void game::processInput(float dt)
 {
+    if (state == GAME_MENU)
+    {
+        if (keys[GLFW_KEY_ENTER] && !keysProcessed[GLFW_KEY_ENTER])
+        {
+            state = GAME_ACTIVE;
+            keysProcessed[GLFW_KEY_ENTER] = true;
+        }
+        if (keys[GLFW_KEY_W] && !keysProcessed[GLFW_KEY_W])
+        {
+            level = (level + 1) % 4;
+            keysProcessed[GLFW_KEY_W] = true;
+        }
+        if (keys[GLFW_KEY_S] && !keysProcessed[GLFW_KEY_S])
+        {
+            if (level > 0)
+            {
+                level--;
+            }
+            else
+            {
+                level = 3;
+            }
+            keysProcessed[GLFW_KEY_S] = true;
+        }
+    }
+
+    if (state == GAME_WIN)
+    {
+        if (keys[GLFW_KEY_ENTER])
+        {
+            keysProcessed[GLFW_KEY_ENTER] = true;
+            effects->chaos = false;
+            state = GAME_MENU;
+        }
+    }
+
     if (state == GAME_ACTIVE)
     {
         float velocity = PLAYER_VELOCITY * dt;
@@ -487,7 +542,7 @@ void game::processInput(float dt)
 
 void game::render()
 {
-    if (state == GAME_ACTIVE)
+    if (state == GAME_ACTIVE || state == GAME_MENU)
     {
         effects->beginRender();
         renderer->drawSprite(resourceManager::getTexture("background"),
@@ -504,6 +559,11 @@ void game::render()
             }
         }
 
+        if (state == GAME_WIN)
+        {
+            text->renderText("You have won, my friend!", 320, gameHeight / 2 - 20.0f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+            text->renderText("Press ENTER to retry or ESC to quit", 130.0f, gameHeight / 2, 1.0f, glm::vec3(1.0f, 1.0f, 0.0f));
+        }
 
         if (!ball->stuck)
         {
@@ -512,5 +572,17 @@ void game::render()
         ball->draw(*renderer);
         effects->endRender();
         effects->render(glfwGetTime());
+
+        std::stringstream ss;
+        ss << lives;
+        text->renderText("Lives:" + ss.str(), 5.0f, 5.0f, 1.0f);
+    }
+
+    if (state == GAME_MENU)
+    {
+        text->renderText("Press ENTER to start", 250.0f, gameHeight / 2, 1.0f);
+        text->renderText("Press W or S to select level", 245.0f, gameHeight / 2 + 20.0f, 0.75f);
+        text->renderText("Press A and D to control the paddle", 225.0f, gameHeight / 2 + 40.0f, 0.75f);
+        text->renderText("Press SPACE to throw the ball", 240.0f, gameHeight / 2 + 60.0f, 0.75f);
     }
 }

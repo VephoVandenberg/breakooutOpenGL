@@ -15,6 +15,7 @@
 #include "particle.h"
 #include "post_processor.h"
 #include "powerup.h"
+#include "text_renderer.h"
 
 namespace gameModule
 {
@@ -44,10 +45,12 @@ namespace gameModule
 	public:
 	    gameState               state;	
 	    bool                    keys[1024];
+	    bool 					keysProcessed[1024];
 	    unsigned int            gameWidth, gameHeight;
 	    std::vector<powerUp>	powerUps;
 	    std::vector<gameLevel> 	levels;
 	    unsigned int 			level;
+	    unsigned int 			lives = 3;
 
 	public:
 	    game(unsigned int width, unsigned int height);
@@ -77,6 +80,7 @@ namespace gameModule
 		particleGenerator 		*particles 		= NULL;
 		postProcessor 	  		*effects  		= NULL;
 		irrklang::ISoundEngine 	*soundEngine  	= NULL;
+		textRenderer 			*text 			= NULL;
 
 		float shakeTime = 0.0f;
 	};
